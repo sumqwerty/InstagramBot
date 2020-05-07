@@ -40,11 +40,3 @@ def main(user):
 start = input()
 main(start)
 
-
-
-
-#see all link
-# /html/body/div[1]/section/main/section/div[3]/div[3]/div[1]/a
-
-#see all list
-# /html/body/div[1]/section/main/div/div[2]/div
