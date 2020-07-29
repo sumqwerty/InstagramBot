@@ -1,4 +1,5 @@
 # need to work on liking the post
+# need to figure out how to get the list of followers of users having followers in 'k' and 'm'.(thousands and millions)
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 import time
