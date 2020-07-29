@@ -1,10 +1,12 @@
+# need to work on liking the post
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 import time
 
 class InstagramBot():
     def __init__(self, email, password):
-        self.browser = webdriver.Chrome("./chromedriver")
+        #self.browser = webdriver.Chrome("./chromedriver") #gettig list of followers not working with chrome
+        self.browser = webdriver.Firefox() #for running geckodriver on linux, the geckodriver file should be placed in /usr/local/bin
         self.email = email
         self.password = password
 
@@ -23,12 +25,19 @@ class InstagramBot():
         passwordInput.send_keys(self.password)
         passwordInput.send_keys(Keys.ENTER)
         
-        time.sleep(3)
+        time.sleep(5)
+
+        saveinfo = self.browser.find_element_by_css_selector('button.sqdOP:nth-child(1)')
+        #saveinfo = self.browser.find_element_by_xpath('/html/body/div[1]/section/main/div/div/div/div/button')
+        saveinfo.send_keys(Keys.ENTER)
+
+        time.sleep(5)
+
+        
+        notif = self.browser.find_element_by_xpath('/html/body/div[4]/div/div/div/div[3]/button[2]')
+        notif.send_keys(Keys.ENTER)
 
         print("Logged In")
-        
-        notif = self.browser.find_element_by_xpath('/html/body/div[4]/div/div/div[3]/button[2]')
-        notif.send_keys(Keys.ENTER)
 
         time.sleep(4)
 
@@ -75,36 +84,34 @@ class InstagramBot():
         for i in likeButton:
             i.send_keys(Keys.ENTER)
 
-    def getUserFollowers(self, username, maximum):
+    def getUserFollowers(self, username):
+
         self.browser.get('https://www.instagram.com/' + username)
         followersLink = self.browser.find_element_by_css_selector('ul li a')
+
+        link = self.browser.find_element_by_css_selector('li.Y8-fY:nth-child(2) > a:nth-child(1) > span:nth-child(1)')
+        fllwno = int(link.get_attribute('title'))
+        print(fllwno)
+
         followersLink.click()
         time.sleep(2)
-        #element_inside_popup = self.browser.find_element_by_xpath('//div[@class="entity-list-wrapper ember-view"]//a')
-        #followersLink.send_keys(Keys.SPACE)
-        followersList = self.browser.find_element_by_css_selector('div[role=\'dialog\'] ul')
-        numberOfFollowersInList = len(followersList.find_elements_by_css_selector('li'))
-        lst = followersList.find_elements_by_css_selector('li')
-        anchor = lst[len(lst)-1]
-        lst.send_keys(Keys.END)
-        
-##        print(numberOfFollowersInList)
-##        followersList.click()
-##        actionChain = webdriver.ActionChains(self.browser)
-##        while (numberOfFollowersInList < maximum):
-##            actionChain.key_down(Keys.SPACE).key_up(Keys.SPACE).perform()
-##            numberOfFollowersInList = len(followersList.find_elements_by_css_selector('li'))
-##            #print(numberOfFollowersInList)
-##        
-##        followers = []
-##        for user in followersList.find_elements_by_css_selector('li'):
-##            userLink = user.find_element_by_css_selector('a').get_attribute('href')
-##            print(userLink)
-##            followers.append(userLink)
-##            if (len(followers) == maximum):
-##                break
-##        return followers
 
+        followersList = self.browser.find_element_by_css_selector('div[role=\'dialog\'] ul')
+        followersList.click()
+        numberOfFollowersInList = len(followersList.find_elements_by_css_selector('li'))
+
+
+        actionChain = webdriver.ActionChains(self.browser)
+        while numberOfFollowersInList < fllwno:
+            actionChain.key_down(Keys.END).key_up(Keys.END).perform()
+            numberOfFollowersInList = len(followersList.find_elements_by_css_selector('li'))
+
+        time.sleep(2)
+
+        final = followersList.find_elements_by_css_selector('li')
+        for user in final:
+            userLink = user.find_element_by_css_selector('a').get_attribute('href')
+            print(userLink)
 
 
     def DMessage(self,To,message):
@@ -157,9 +164,9 @@ class InstagramBot():
 
 
 def main(user):
-    bot = InstagramBot("usernameOfBot","password")
+    bot = InstagramBot("username","password")
     bot.signIn()
-    #bot.Like()
+    #bot.Like() #still need to work on this
     #bot.seeAll_follow()
     #bot.DMessage('sumitsaini_lc_928','using your bot')
 
@@ -170,8 +177,9 @@ def main(user):
     #public
     #bot.follow_by_name(user)
     #bot.unfollow_by_name('sumitsaini_lc_928')
-    #bot.getUserFollowers('sumitsaini_lc_928',30)   
+    #bot.getUserFollowers('sumitsaini_lc_928')
     print("done")
 
 start = input()
 main(start)
+
